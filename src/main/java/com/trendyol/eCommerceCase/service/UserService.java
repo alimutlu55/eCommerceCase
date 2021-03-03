@@ -22,11 +22,12 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public void signUp(User user) throws UserNameExistException {
+    public User signUp(User user) throws UserNameExistException {
         User fetchedUser = findUserByUsername(user.getUsername());
         if(fetchedUser != null) throw new UserNameExistException(USERNAME_EXIST);
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         iUserRepository.save(user);
+        return user;
     }
 
     @Override
