@@ -1,5 +1,6 @@
 package com.trendyol.eCommerceCase.controller;
 
+import com.trendyol.eCommerceCase.exceptions.UserNameExistException;
 import com.trendyol.eCommerceCase.model.User;
 import com.trendyol.eCommerceCase.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +14,8 @@ public class UserController {
     @Autowired
     private IUserService userService;
 
-    @PostMapping("/user")
-    public void saveUser(@RequestBody User user){
-        userService.save(user);
+    @PostMapping("/user/sign-up")
+    public void saveUser(@RequestBody User user) throws UserNameExistException {
+        userService.signUp(user);
     }
 }
