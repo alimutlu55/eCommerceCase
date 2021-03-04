@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 import static com.trendyol.eCommerceCase.constants.SecurityConstants.*;
 
-
+@Component
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     public JwtAuthorizationFilter(AuthenticationManager authenticationManager) {

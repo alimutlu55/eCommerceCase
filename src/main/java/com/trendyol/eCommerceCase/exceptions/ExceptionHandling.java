@@ -9,16 +9,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
+
+import java.util.List;
 import java.util.Objects;
 
 import static org.springframework.http.HttpStatus.*;
 
 @RestControllerAdvice
-public class ExceptionHandling implements ErrorController {
+public class ExceptionHandling implements ErrorController  {
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
     private static final String METHOD_IS_NOT_ALLOWED = "This request method is not allowed on this endpoint. Please send a '%s' request";
     private static final String INTERNAL_SERVER_ERROR_MSG = "An error occurred while processing the request";
@@ -36,6 +42,16 @@ public class ExceptionHandling implements ErrorController {
         return createHttpResponse(BAD_REQUEST, exception.getMessage());
     }
 
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ResponseEntity<HttpResponse> categoryNotFound(CategoryNotFoundException exception) {
+        return createHttpResponse(NOT_FOUND, exception.getMessage());
+    }
+
+    @ExceptionHandler(CategoryNameExistException.class)
+    public ResponseEntity<HttpResponse> categoryNameExist(CategoryNameExistException exception) {
+        return createHttpResponse(BAD_REQUEST, exception.getMessage());
+    }
+
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<HttpResponse> userNotFoundException(UsernameNotFoundException exception) {
         return createHttpResponse(BAD_REQUEST, exception.getMessage());
@@ -45,6 +61,17 @@ public class ExceptionHandling implements ErrorController {
     public ResponseEntity<HttpResponse> methodNotSupportedException(HttpRequestMethodNotSupportedException exception) {
         HttpMethod supportedMethod = Objects.requireNonNull(exception.getSupportedHttpMethods()).iterator().next();
         return createHttpResponse(METHOD_NOT_ALLOWED, String.format(METHOD_IS_NOT_ALLOWED, supportedMethod));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public final ResponseEntity<HttpResponse> handleUserMethodFieldErrors(MethodArgumentNotValidException ex, WebRequest request) {
+        final List<FieldError> fieldErrors = ex.getBindingResult().getFieldErrors();
+        StringBuilder errorMessages = new StringBuilder();
+        for (FieldError fieldError : fieldErrors) {
+            errorMessages.append(fieldError.getDefaultMessage());
+        }
+        return createHttpResponse(BAD_REQUEST, errorMessages.toString());
     }
 
     @RequestMapping(ERROR_PATH)
@@ -67,6 +94,7 @@ public class ExceptionHandling implements ErrorController {
         return new ResponseEntity<>(new HttpResponse(httpStatus.value(), httpStatus,
                 httpStatus.getReasonPhrase().toUpperCase(), message), httpStatus);
     }
+
 
 
 }

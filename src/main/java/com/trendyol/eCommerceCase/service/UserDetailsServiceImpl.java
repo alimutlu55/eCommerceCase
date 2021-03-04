@@ -1,7 +1,7 @@
 package com.trendyol.eCommerceCase.service;
 
 import com.trendyol.eCommerceCase.model.User;
-import com.trendyol.eCommerceCase.dao.IUserRepository;
+import com.trendyol.eCommerceCase.dao.UserRepository;
 import com.trendyol.eCommerceCase.model.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.*;
@@ -12,10 +12,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private IUserRepository userRepository;
+    private UserRepository userRepository;
 
     @Autowired
-    public UserDetailsServiceImpl(IUserRepository userRepository) {
+    public UserDetailsServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
