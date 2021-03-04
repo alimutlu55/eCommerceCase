@@ -17,6 +17,7 @@ import javax.validation.Valid;
 import static org.springframework.http.HttpStatus.*;
 
 @RestController
+@RequestMapping(path = "/")
 public class UserController {
 
     private UserService userService;

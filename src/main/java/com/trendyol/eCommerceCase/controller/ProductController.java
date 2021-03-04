@@ -15,6 +15,7 @@ import java.util.List;
 import static org.springframework.http.HttpStatus.*;
 
 @RestController
+@RequestMapping(path = "/")
 public class ProductController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
