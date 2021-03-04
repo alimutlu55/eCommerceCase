@@ -1,7 +1,7 @@
 package com.trendyol.eCommerceCase.service;
 
 import com.trendyol.eCommerceCase.dao.IUserRepository;
-import com.trendyol.eCommerceCase.exceptions.UserNameExistException;
+import com.trendyol.eCommerceCase.exceptions.UsernameExistException;
 import com.trendyol.eCommerceCase.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -22,9 +22,9 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public User signUp(User user) throws UserNameExistException {
+    public User signUp(User user) throws UsernameExistException {
         User fetchedUser = findUserByUsername(user.getUsername());
-        if(fetchedUser != null) throw new UserNameExistException(USERNAME_EXIST);
+        if(fetchedUser != null) throw new UsernameExistException(USERNAME_EXIST);
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         iUserRepository.save(user);
         return user;

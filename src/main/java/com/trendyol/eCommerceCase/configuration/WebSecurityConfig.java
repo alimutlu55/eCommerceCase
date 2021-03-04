@@ -1,22 +1,18 @@
 package com.trendyol.eCommerceCase.configuration;
 
-import com.trendyol.eCommerceCase.filter.JwtAccessDeniedHandler;
-import com.trendyol.eCommerceCase.filter.JwtAuthenticationFilter;
+import com.trendyol.eCommerceCase.filter.JwtAuthenticationEntryPoint;
 import com.trendyol.eCommerceCase.filter.JwtAuthorizationFilter;
 import com.trendyol.eCommerceCase.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import static com.trendyol.eCommerceCase.constants.SecurityConstants.*;
 
@@ -24,27 +20,26 @@ import static com.trendyol.eCommerceCase.constants.SecurityConstants.*;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private UserDetailsServiceImpl userDetailsService;
-    private JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
-    public WebSecurityConfig(@Qualifier("userDetailsService") UserDetailsServiceImpl userDetailsService,
-                             JwtAccessDeniedHandler jwtAccessDeniedHandler,
-                             BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public WebSecurityConfig(UserDetailsServiceImpl userDetailsService,
+                             BCryptPasswordEncoder bCryptPasswordEncoder,
+                             JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint) {
         this.userDetailsService = userDetailsService;
-        this.jwtAccessDeniedHandler = jwtAccessDeniedHandler;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable().authorizeRequests()
-                .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
+                .antMatchers(HttpMethod.POST, PUBLIC_URLS).permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .exceptionHandling().accessDeniedHandler(jwtAccessDeniedHandler)
+                .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .and()
-                .addFilter(new JwtAuthenticationFilter(authenticationManager()))
                 .addFilter(new JwtAuthorizationFilter(authenticationManager()))
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
@@ -55,10 +50,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
-        return source;
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
     }
 
 }

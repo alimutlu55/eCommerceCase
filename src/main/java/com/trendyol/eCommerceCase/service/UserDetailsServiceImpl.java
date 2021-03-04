@@ -4,14 +4,12 @@ import com.trendyol.eCommerceCase.model.User;
 import com.trendyol.eCommerceCase.dao.IUserRepository;
 import com.trendyol.eCommerceCase.model.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 @Service
-@Qualifier("userDetailsService")
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private IUserRepository userRepository;
