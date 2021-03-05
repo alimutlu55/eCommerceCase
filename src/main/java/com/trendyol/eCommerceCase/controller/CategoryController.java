@@ -28,7 +28,7 @@ public class CategoryController {
 
     @GetMapping("/category/{id}")
     public ResponseEntity<Category> getById(@PathVariable long id){
-        Category category = categoryService.getById(id);
+        Category category = categoryService.findById(id);
         return new ResponseEntity<>(category,OK);
     }
 
@@ -39,7 +39,7 @@ public class CategoryController {
     }
 
     @PutMapping("/category")
-    public ResponseEntity<Category> update(@RequestBody Category category){
+    public ResponseEntity<Category> update(@RequestBody Category category) throws CategoryNotFoundException {
         Category categoryList = categoryService.update(category);
         return new ResponseEntity<>(categoryList,OK);
     }

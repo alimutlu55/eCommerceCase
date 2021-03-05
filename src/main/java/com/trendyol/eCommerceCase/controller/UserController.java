@@ -10,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -18,6 +19,7 @@ import static org.springframework.http.HttpStatus.*;
 
 @RestController
 @RequestMapping(path = "/")
+@Validated
 public class UserController {
 
     private UserService userService;
@@ -45,10 +47,4 @@ public class UserController {
         HttpHeaders jwtHeader = jwtTokenProvider.getJwtHeader(userPrincipal);
         return new ResponseEntity<>(loginUser, jwtHeader, OK);
     }
-
-    @RequestMapping(value = "/user/reset", method = RequestMethod.GET)
-    public ResponseEntity<String> resetPassword(String ok) {
-        return new ResponseEntity<>("ok",CREATED);
-    }
-
 }
